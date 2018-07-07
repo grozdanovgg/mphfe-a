@@ -4,7 +4,8 @@
   "version": "0.2.0",
   "permissions": [
     "tabs",
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "background": {
     "page": "index.html#/background",

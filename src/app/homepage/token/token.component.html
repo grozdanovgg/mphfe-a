@@ -1,0 +1,4 @@
+<h2>{{name}}</h2>
+<mat-accordion *ngFor="let pool of pools">
+  <app-pool [name]="pool.name" [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector"></app-pool>
+</mat-accordion>
