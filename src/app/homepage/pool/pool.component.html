@@ -1,13 +1,27 @@
 <mat-expansion-panel>
+
+
   <mat-expansion-panel-header>
     <mat-panel-title>
       {{name}}
     </mat-panel-title>
+
     <mat-panel-description>
-      {{lastBlockHTMLSelector}}
+      <!-- {{lastBlockHTMLSelector}} -->
     </mat-panel-description>
+
   </mat-expansion-panel-header>
-  <mat-form-field>
-    <input matInput placeholder="{{lastBlockHTMLSelector}}">
-  </mat-form-field>
+
+
+  <form [formGroup]="addPoolForm" (keyup.enter)="addPool()">
+    <mat-form-field>
+      <input matInput placeholder="Last block HTML selector" value="{{lastBlockHTMLSelector}}">
+    </mat-form-field>
+    <div>
+      <button type="button" (click)="addPool()" mat-raised-button color="primary">Save</button>
+      <button type="button" (click)="cancelEdit()" mat-raised-button color="primary">Cancel</button>
+      <button type="button" (click)="delete()" mat-raised-button color="warn">Delete</button>
+    </div>
+  </form>
+
 </mat-expansion-panel>

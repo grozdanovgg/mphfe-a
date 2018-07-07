@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { BackgroundComponent } from './background/background.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { TokenComponent } from './homepage/token/token.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,6 +29,8 @@ import { MatInputModule } from '@angular/material';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatButtonModule,
     MatExpansionModule,
