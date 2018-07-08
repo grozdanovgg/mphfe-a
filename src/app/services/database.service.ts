@@ -22,6 +22,8 @@ export class DatabaseService {
         );
 
         if (duplicatePool === -1) {
+          console.log('PUSHING:');
+          console.log(pool);
           response.pools.push(pool);
           chrome.storage.sync.set({ pools: response.pools }, () => {
             console.log('Value is set to: ');

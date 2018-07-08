@@ -18,4 +18,20 @@ export class TokenComponent implements OnInit {
     this.pools = await this.db.getTokenPools(this.name);
   }
 
+  async addPool(poolName: string, lastBlockHTMLSelector: string): Promise<void> {
+
+    const pool: IPool = {
+      name: poolName,
+      lastBlockHTMLSelector,
+      forToken: this.name
+    };
+
+    try {
+      await this.db.addPool(pool);
+      this.pools.push(pool);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 }

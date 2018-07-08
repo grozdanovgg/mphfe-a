@@ -13,6 +13,7 @@ export class PoolComponent implements OnInit {
   @Input() forToken: string;
 
   addPoolForm: FormGroup;
+  isActive = true;
 
   constructor(
     private formBuilder: FormBuilder
