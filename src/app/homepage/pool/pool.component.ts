@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { DatabaseService } from './../../services/database.service';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material';
 
@@ -12,12 +13,15 @@ export class PoolComponent implements OnInit {
   @Input() name: string;
   @Input() lastBlockHTMLSelector: string;
   @Input() forToken: string;
+  @Input() isActive: boolean;
+
+  @ViewChild('matExpansionPanel') expansionPanel: MatExpansionPanel;
 
   addPoolForm: FormGroup;
-  isActive = true;
 
   constructor(
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private db: DatabaseService
   ) { }
 
   ngOnInit() {
@@ -30,16 +34,27 @@ export class PoolComponent implements OnInit {
     });
   }
 
-
-  addPool() {
-    console.log(event);
+  save() {
+    // TODO
   }
-  cancelEdit() {
 
+  cancelEdit() {
+    this.expansionPanel.close();
   }
 
   delete() {
+    this.db.removePool(this.name);
+    this.expansionPanel.close();
+  }
 
+  poolActiveToggle() {
+    console.log(!this.isActive);
+    this.db.setPoolToggle(this.name, !this.isActive)
+      .then((result) => {
+        console.log('toggled');
+      }).catch((err) => {
+        'error toggling';
+      });
   }
 
   expandPanel(matExpansionPanel: MatExpansionPanel, event: Event) {
@@ -51,7 +66,7 @@ export class PoolComponent implements OnInit {
   }
 
   private isExpansionIndicator(target: EventTarget): boolean {
-    const expansionIndicatorClass = 'mat-expansion-indicator';
+    const expansionIndicatorClass = 'pool-edit-icon';
     return (target['classList'] && target['classList'].contains(expansionIndicatorClass));
   }
 }

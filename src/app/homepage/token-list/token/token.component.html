@@ -2,10 +2,11 @@
 <mat-accordion *ngFor="let pool of pools">
   <app-pool [name]="pool.name" [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector"></app-pool>
 </mat-accordion> -->
-<mat-list *ngFor="let pool of pools">
-  <app-pool [name]="pool.name" [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector" [forToken]="name"></app-pool>
-</mat-list>
+<mat-accordion *ngFor="let pool of pools" [multi]="false">
+  <app-pool [name]="pool.name" [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector" [forToken]="name" [isActive]="pool.active"></app-pool>
+</mat-accordion>
 
+<br>
 
 <form>
   <mat-form-field>

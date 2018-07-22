@@ -3,4 +3,5 @@ export default interface IPool {
     lastBlock?: number;
     lastBlockHTMLSelector?: string;
     forToken?: string;
+    active?: boolean;
 }

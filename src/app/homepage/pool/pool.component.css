@@ -1,0 +1,6 @@
+mat-expansion-panel-header{
+    cursor: default !important;
+}
+mat-icon {
+    cursor: pointer;
+  }

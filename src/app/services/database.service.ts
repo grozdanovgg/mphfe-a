@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
 import IPool from '../models/IPool';
 import IToken from '../models/IToken';
+import { Subject } from '../../../node_modules/rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
+
+  onAddPool$ = new Subject<IPool>();
+  onRemovePool$ = new Subject<number>();
+
+  onPoolActiveToggle$ = new Subject<void>();
 
   constructor() { }
 
@@ -28,6 +34,8 @@ export class DatabaseService {
           chrome.storage.sync.set({ pools: response.pools }, () => {
             console.log('Value is set to: ');
             console.log(pool);
+
+            this.onAddPool$.next(pool);
 
             resolve(pool);
           });
@@ -56,6 +64,35 @@ export class DatabaseService {
           response.pools.splice(poolToRemove, 1);
 
           chrome.storage.sync.set({ pools: response.pools }, () => {
+            this.onRemovePool$.next(poolToRemove);
+            resolve();
+          });
+        } else {
+          reject();
+        }
+      });
+    });
+  }
+
+  setPoolToggle(poolName: string, isActive: boolean) {
+    return new Promise((resolve, reject) => {
+
+      chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
+        if (!response.pools) {
+          response = { pools: [] };
+        }
+        const poolToToggleIndex: number = response.pools.findIndex(
+          (existingPool) => {
+            return existingPool.name === poolName;
+          }
+        );
+
+        if (poolToToggleIndex > -1) {
+
+          response.pools[poolToToggleIndex].active = isActive;
+
+          chrome.storage.sync.set({ pools: response.pools }, () => {
+            this.onPoolActiveToggle$.next();
             resolve();
           });
         } else {
@@ -88,8 +125,8 @@ export class DatabaseService {
         if (!response.pools) {
           // reject('There are no pools for this token');
           response.pools = [
-            { name: '1', lastBlockHTMLSelector: 'sel', forToken: 'ravencoin' },
-            { name: '2', lastBlockHTMLSelector: 'sel 2', forToken: 'ether' }
+            { name: '1', lastBlockHTMLSelector: 'sel', forToken: 'ravencoin', active: false },
+            { name: '2', lastBlockHTMLSelector: 'sel 2', forToken: 'ether', active: false }
           ];
         }
         const poolsOfToken: IPool[] = findPoolsOfToken(response.pools, 'forToken', tokenName);
