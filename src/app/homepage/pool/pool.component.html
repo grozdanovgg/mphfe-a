@@ -1,14 +1,14 @@
-<mat-expansion-panel>
+<mat-expansion-panel #matExpansionPanel>
 
 
-  <mat-expansion-panel-header>
+  <mat-expansion-panel-header (click)="expandPanel(matExpansionPanel, $event)">
     <mat-panel-title>
       {{name}}
     </mat-panel-title>
 
     <mat-panel-description>
       <!-- {{lastBlockHTMLSelector}} -->
-      <mat-slide-toggle aria-label="pool-active-toggle" class="example-margin" [color]="'accent'" [(checked)]="isActive" [disabled]="'false'">
+      <mat-slide-toggle aria-label="pool-active-toggle" [color]="'accent'" [(checked)]="isActive" [disabled]="'false'">
         Slide me!
       </mat-slide-toggle>
 
@@ -16,6 +16,7 @@
 
 
   </mat-expansion-panel-header>
+
 
 
   <form [formGroup]="addPoolForm" (keyup.enter)="addPool()">
@@ -28,5 +29,8 @@
       <button type="button" (click)="delete()" mat-raised-button color="warn">Delete</button>
     </div>
   </form>
-
 </mat-expansion-panel>
+
+<!-- 
+<mat-list-item>{{name}}</mat-list-item>
+<mat-divider></mat-divider> -->

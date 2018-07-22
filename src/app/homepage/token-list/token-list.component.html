@@ -1,0 +1,5 @@
+<mat-tab-group>
+  <mat-tab *ngFor="let token of tokens" label={{token.name}}>
+    <app-token [name]="token.name"></app-token>
+  </mat-tab>
+</mat-tab-group>

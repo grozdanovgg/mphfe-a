@@ -1,7 +1,11 @@
-<h2>{{name}}</h2>
+<!-- <h2>{{name}}</h2>
 <mat-accordion *ngFor="let pool of pools">
   <app-pool [name]="pool.name" [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector"></app-pool>
-</mat-accordion>
+</mat-accordion> -->
+<mat-list *ngFor="let pool of pools">
+  <app-pool [name]="pool.name" [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector" [forToken]="name"></app-pool>
+</mat-list>
+
 
 <form>
   <mat-form-field>
@@ -13,13 +17,3 @@
   <button mat-raised-button color="primary" (click)="addPool(newPoolName.value, lastBlockHTMLSelector.value)">Add</button>
   <button mat-raised-button>Clear</button>
 </form>
-
-
-
-<mat-list>
-  <mat-list-item>Item 1</mat-list-item>
-  <mat-divider></mat-divider>
-  <mat-list-item>Item 2</mat-list-item>
-  <mat-divider></mat-divider>
-  <mat-list-item>Item 3</mat-list-item>
-</mat-list>

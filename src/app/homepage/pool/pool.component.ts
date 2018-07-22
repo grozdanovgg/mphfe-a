@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder } from '../../../../node_modules/@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { MatExpansionPanel } from '@angular/material';
 
 @Component({
   selector: 'app-pool',
@@ -39,5 +40,18 @@ export class PoolComponent implements OnInit {
 
   delete() {
 
+  }
+
+  expandPanel(matExpansionPanel: MatExpansionPanel, event: Event) {
+    event.stopPropagation();
+
+    if (!this.isExpansionIndicator(event.target)) {
+      matExpansionPanel.toggle();
+    }
+  }
+
+  private isExpansionIndicator(target: EventTarget): boolean {
+    const expansionIndicatorClass = 'mat-expansion-indicator';
+    return (target['classList'] && target['classList'].contains(expansionIndicatorClass));
   }
 }

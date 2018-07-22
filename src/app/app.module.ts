@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
+import { MatTabsModule } from '@angular/material/tabs';
+import { TokenListComponent } from './homepage/token-list/token-list.component';
 
 
 
@@ -27,7 +29,8 @@ import { MatListModule } from '@angular/material/list';
     BackgroundComponent,
     HomepageComponent,
     TokenComponent,
-    PoolComponent
+    PoolComponent,
+    TokenListComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,8 @@ import { MatListModule } from '@angular/material/list';
     MatFormFieldModule,
     MatSlideToggleModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatTabsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
