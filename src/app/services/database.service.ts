@@ -13,8 +13,6 @@ export class DatabaseService {
 
   onPoolActiveToggle$ = new Subject<void>();
 
-  constructor() { }
-
   addPool(pool: IPool): Promise<IPool | void> {
     return new Promise((resolve, reject) => {
       chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
@@ -125,8 +123,8 @@ export class DatabaseService {
         if (!response.pools) {
           // reject('There are no pools for this token');
           response.pools = [
-            { name: '1', lastBlockHTMLSelector: 'sel', forToken: 'ravencoin', active: false },
-            { name: '2', lastBlockHTMLSelector: 'sel 2', forToken: 'ether', active: false }
+            { name: '1', lastBlockHTMLSelector: 'sel', url: 'some url here...', forToken: 'ravencoin', active: false },
+            { name: '2', lastBlockHTMLSelector: 'sel 2', url: 'some url here...', forToken: 'ether', active: false }
           ];
         }
         const poolsOfToken: IPool[] = findPoolsOfToken(response.pools, 'forToken', tokenName);

@@ -28,10 +28,11 @@ export class TokenComponent implements OnInit {
 
   }
 
-  async addPool(poolName: string, lastBlockHTMLSelector: string): Promise<void> {
+  async addPool(poolName: string, url: string, lastBlockHTMLSelector: string): Promise<void> {
 
     const pool: IPool = {
       name: poolName,
+      url: url,
       lastBlockHTMLSelector,
       forToken: this.name,
       active: false
