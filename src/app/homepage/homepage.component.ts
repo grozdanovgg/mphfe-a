@@ -1,3 +1,4 @@
+import { DatabaseService } from './../services/database.service';
 import { HoppingService } from './../services/hopping.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -23,7 +24,8 @@ export class HomepageComponent implements OnInit {
   startStopColor = Colors.primary;
   startStopBtnText = StartStopText.Stop;
 
-  constructor(private hoppingService: HoppingService) {
+  constructor(private hoppingService: HoppingService,
+    private db: DatabaseService) {
 
   }
 
@@ -33,6 +35,7 @@ export class HomepageComponent implements OnInit {
   startHopping() {
 
     // this.hoppingService.startWatching(poolsList);
+    this.db.getTokens()
 
     this.hoppingIsActive = !this.hoppingIsActive;
     if (this.hoppingIsActive) {

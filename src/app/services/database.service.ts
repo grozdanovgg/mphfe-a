@@ -9,7 +9,7 @@ import { Subject } from '../../../node_modules/rxjs';
 export class DatabaseService {
 
   onAddPool$ = new Subject<IPool>();
-  onRemovePool$ = new Subject<number>();
+  onRemovePool$ = new Subject<IPool>();
 
   onPoolActiveToggle$ = new Subject<void>();
 
@@ -51,15 +51,17 @@ export class DatabaseService {
         if (!response.pools) {
           response = { pools: [] };
         }
-        const poolToRemove = response.pools.findIndex(
+        const poolToRemoveIndex = response.pools.findIndex(
           (existingPool) => {
             return existingPool.name === poolName;
           }
         );
 
-        if (poolToRemove > -1) {
+        if (poolToRemoveIndex > -1) {
 
-          response.pools.splice(poolToRemove, 1);
+          const poolToRemove = response.pools[poolToRemoveIndex];
+
+          response.pools.splice(poolToRemoveIndex, 1);
 
           chrome.storage.sync.set({ pools: response.pools }, () => {
             this.onRemovePool$.next(poolToRemove);

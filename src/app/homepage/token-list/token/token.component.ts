@@ -19,11 +19,18 @@ export class TokenComponent implements OnInit {
     this.pools = await this.db.getTokenPools(this.name);
 
     this.db.onAddPool$.subscribe((pool: IPool) => {
-      this.pools.push(pool);
+      if (pool.forToken === this.name) {
+        this.pools.push(pool);
+      }
     });
 
-    this.db.onRemovePool$.subscribe(poolIndex => {
+    this.db.onRemovePool$.subscribe((poolToRemove: IPool) => {
+
+      const poolIndex = this.pools.findIndex(pool => pool.name === poolToRemove.name);
+      if (poolIndex >= 0) {
+      }
       this.pools.splice(poolIndex, 1);
+
     });
 
   }
@@ -45,7 +52,4 @@ export class TokenComponent implements OnInit {
       console.log(error);
     }
   }
-
-
-
 }
