@@ -35,7 +35,7 @@ export class HomepageComponent implements OnInit {
   startHopping() {
 
     // this.hoppingService.startWatching(poolsList);
-    this.db.getTokens()
+    this.db.getTokens();
 
     this.hoppingIsActive = !this.hoppingIsActive;
     if (this.hoppingIsActive) {
