@@ -7,7 +7,7 @@ import IPool from '../models/IPool';
 })
 export class HoppingService {
 
-  interval = 30000;
+  interval = 5000;
 
   constructor(private crawler: CrawlerService) { }
 
@@ -16,9 +16,19 @@ export class HoppingService {
 
       try {
         const controlSite = await this.checkIfControlSiteAvailable('https://simplemining.net/*');
+
+        chrome.tabs.executeScript(
+          controlSite.id,
+          {
+            file: 'assets/content.js'
+          },
+          (results) => {
+            console.log(results);
+          });
+
         console.log(controlSite);
 
-        setTimeout(() => {
+        setInterval(() => {
           for (const pool of poolslist) {
             this.crawler.checkEl(pool.url, pool.lastBlockHTMLSelector);
           }
@@ -33,12 +43,12 @@ export class HoppingService {
     });
   }
 
-  private checkIfControlSiteAvailable(controlSites: string): Promise<string> {
+  private checkIfControlSiteAvailable(controlSites: string): Promise<ITab> {
     return new Promise((res, rej) => {
 
       chrome.tabs.query({ currentWindow: true, url: controlSites }, (tabs: ITab[]) => {
         if (tabs.length === 1) {
-          res(tabs[0].url);
+          res(tabs[0]);
         } else {
           rej('Control Website is not active, or there is more than 1 open in the current window');
         }
