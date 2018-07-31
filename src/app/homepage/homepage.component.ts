@@ -3,8 +3,8 @@ import { HoppingService } from './../services/hopping.service';
 import { Component, OnInit } from '@angular/core';
 
 enum StartStopText {
-  Start = 'Start Hopping',
-  Stop = 'Stop Hopping'
+  Start = 'START Hopping',
+  Stop = 'STOP Hopping'
 }
 
 enum Colors {
@@ -22,7 +22,7 @@ export class HomepageComponent implements OnInit {
 
   hoppingIsActive = false;
   startStopColor = Colors.primary;
-  startStopBtnText = StartStopText.Stop;
+  startStopBtnText = StartStopText.Start;
 
   constructor(private hoppingService: HoppingService,
     private db: DatabaseService) {
@@ -32,19 +32,26 @@ export class HomepageComponent implements OnInit {
   ngOnInit() {
   }
 
-  startHopping() {
+  async startHopping() {
 
-    // this.hoppingService.startWatching(poolsList);
-    this.db.getTokens();
+    try {
+      const tokens = await this.db.getTokens();
+      const pools = await this.db.getTokenPools(tokens[0].name);
 
-    this.hoppingIsActive = !this.hoppingIsActive;
-    if (this.hoppingIsActive) {
-      this.startStopBtnText = StartStopText.Stop;
-      this.startStopColor = Colors.warn;
-    } else {
-      this.startStopBtnText = StartStopText.Start;
-      this.startStopColor = Colors.primary;
+      await this.hoppingService.startWatching(pools);
+      this.hoppingIsActive = !this.hoppingIsActive;
+      if (this.hoppingIsActive) {
+        this.startStopBtnText = StartStopText.Stop;
+        this.startStopColor = Colors.warn;
+      } else {
+        this.startStopBtnText = StartStopText.Start;
+        this.startStopColor = Colors.primary;
+      }
+    } catch (error) {
+      console.log(error);
     }
+    // this.db.getTokens();
+
   }
 
 }

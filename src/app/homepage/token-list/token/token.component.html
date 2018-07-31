@@ -8,24 +8,24 @@
 
 <br>
 
-<form>
-  <mat-form-field>
+<form fxLayout="row" fxLayoutGap="10px">
+  <mat-form-field fxFlex="28% 28% 28%">
     <input #newPoolName matInput placeholder="Pool name">
     <button mat-button *ngIf="newPoolName.value" matSuffix mat-icon-button aria-label="Clear" (click)="newPoolName.value=''">
       <mat-icon>close</mat-icon>
     </button>
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field fxFlex="28% 28% 28%">
     <input #newPoolUrl matInput placeholder="Pool blocks URL">
     <button mat-button *ngIf="newPoolUrl.value" matSuffix mat-icon-button aria-label="Clear" (click)="newPoolUrl.value=''">
       <mat-icon>close</mat-icon>
     </button>
   </mat-form-field>
-  <mat-form-field>
+  <mat-form-field fxFlex="28% 28% 28%">
     <input #lastBlockHTMLSelector matInput placeholder="Last block HTML selector">
     <button mat-button *ngIf="lastBlockHTMLSelector.value" matSuffix mat-icon-button aria-label="Clear" (click)="lastBlockHTMLSelector.value=''">
       <mat-icon>close</mat-icon>
     </button>
   </mat-form-field>
-  <button mat-mini-fab color="primary" (click)="addPool(newPoolName.value,newPoolUrl.value, lastBlockHTMLSelector.value)">+</button>
+  <button fxFlex="10% 10% 10%" mat-mini-fab color="basic" (click)="addPool(newPoolName.value,newPoolUrl.value, lastBlockHTMLSelector.value)">+</button>
 </form>
