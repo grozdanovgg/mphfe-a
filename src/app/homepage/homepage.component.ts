@@ -35,10 +35,10 @@ export class HomepageComponent implements OnInit {
   async startHopping() {
 
     try {
-      const tokens = await this.db.getTokens();
-      const pools = await this.db.getTokenPools(tokens[0].name);
+      const tokens = await this.db.getTokens().toPromise();
+      const pools = await this.db.getTokenPools(tokens[0].name).toPromise();
 
-      await this.hoppingService.startWatching(pools);
+      await this.hoppingService.startWatching(pools).toPromise();
       this.hoppingIsActive = !this.hoppingIsActive;
       if (this.hoppingIsActive) {
         this.startStopBtnText = StartStopText.Stop;

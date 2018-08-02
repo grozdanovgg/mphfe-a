@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CrawlerService } from './crawler.service';
 import IPool from '../models/IPool';
+import { Observable } from '../../../node_modules/rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,46 +12,45 @@ export class HoppingService {
 
   constructor(private crawler: CrawlerService) { }
 
-  async startWatching(poolslist: IPool[]): Promise<Object> {
-    return new Promise(async (res, rej) => {
+  startWatching(poolslist: IPool[]): Observable<Object> {
+    return Observable.create(observer => {
 
-      try {
-        const controlSite = await this.checkIfControlSiteAvailable('https://simplemining.net/*');
+      return this.checkIfControlSiteAvailable('https://simplemining.net/*')
+        .subscribe(tab => {
 
-        chrome.tabs.executeScript(
-          controlSite.id,
-          {
-            file: 'assets/content.js'
-          },
-          (results) => {
-            console.log(results);
-          });
+          chrome.tabs.executeScript(
+            tab.id,
+            {
+              file: 'assets/content.js'
+            },
+            (results) => {
+              console.log(results);
+            });
 
-        console.log(controlSite);
+          console.log(tab);
 
-        setInterval(() => {
-          for (const pool of poolslist) {
-            this.crawler.checkEl(pool.url, pool.lastBlockHTMLSelector);
-          }
-        }, this.interval);
+          setInterval(() => {
+            for (const pool of poolslist) {
+              this.crawler.checkEl(pool.url, pool.lastBlockHTMLSelector);
+            }
+          }, this.interval);
 
-        res();
-
-      } catch (error) {
-        console.log(error);
-        rej();
-      }
+          observer.next();
+        }, (error) => {
+          console.log(error);
+          observer.error();
+        });
     });
   }
 
-  private checkIfControlSiteAvailable(controlSites: string): Promise<ITab> {
-    return new Promise((res, rej) => {
+  private checkIfControlSiteAvailable(controlSites: string): Observable<ITab> {
+    return Observable.create(observer => {
 
       chrome.tabs.query({ currentWindow: true, url: controlSites }, (tabs: ITab[]) => {
         if (tabs.length === 1) {
-          res(tabs[0]);
+          observer.next(tabs[0]);
         } else {
-          rej('Control Website is not active, or there is more than 1 open in the current window');
+          observer.error('Control Website is not active, or there is more than 1 open in the current window');
         }
       });
     });

@@ -1,5 +1,7 @@
+import { Component, OnInit, Input, OnDestroy, ChangeDetectorRef } from '@angular/core';
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Subscription } from 'rxjs';
+
 import IPool from '../../../models/IPool';
 import { DatabaseService } from '../../../services/database.service';
 
@@ -9,18 +11,25 @@ import { DatabaseService } from '../../../services/database.service';
   templateUrl: './token.component.html',
   styleUrls: ['./token.component.css']
 })
-export class TokenComponent implements OnInit {
+export class TokenComponent implements OnInit, OnDestroy {
   @Input() name: string;
 
-  pools: IPool[]; // = [{ name: '1', lastBlockHTMLSelector: 'sel' }, { name: '2', lastBlockHTMLSelector: 'sel 2' }];
-  constructor(private db: DatabaseService) { }
+  pools: IPool[] = []; // = [{ name: '1', lastBlockHTMLSelector: 'sel' }, { name: '2', lastBlockHTMLSelector: 'sel 2' }];
+  onAddSubscription: Subscription;
+
+  constructor(private db: DatabaseService,
+    private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
-    this.pools = await this.db.getTokenPools(this.name);
+    this.pools = await this.db.getTokenPools(this.name).toPromise();
 
     this.db.onAddPool$.subscribe((pool: IPool) => {
+      console.log('POOL ADDED DETECTED');
       if (pool.forToken === this.name) {
         this.pools.push(pool);
+        this.cdr.detectChanges();
+        console.log('IN THE IF');
+        console.log(pool);
       }
     });
 
@@ -35,7 +44,11 @@ export class TokenComponent implements OnInit {
 
   }
 
-  async addPool(poolName: string, url: string, lastBlockHTMLSelector: string): Promise<void> {
+  ngOnDestroy(): void {
+    this.onAddSubscription.unsubscribe();
+  }
+
+  addPool(poolName: string, url: string, lastBlockHTMLSelector: string): void {
 
     const pool: IPool = {
       name: poolName,
@@ -45,11 +58,11 @@ export class TokenComponent implements OnInit {
       active: false
     };
 
-    try {
-      await this.db.addPool(pool);
-
-    } catch (error) {
-      console.log(error);
-    }
+    this.onAddSubscription = this.db.addPool(pool)
+      .subscribe(
+        (poolAdded) => { console.log(poolAdded); },
+        (err) => { console.log(err); });
   }
+
+
 }

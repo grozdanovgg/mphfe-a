@@ -1,14 +1,15 @@
 import { DatabaseService } from './../../services/database.service';
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material';
+import { Subscription } from '../../../../node_modules/rxjs';
 
 @Component({
   selector: 'app-pool',
   templateUrl: './pool.component.html',
   styleUrls: ['./pool.component.css']
 })
-export class PoolComponent implements OnInit {
+export class PoolComponent implements OnInit, OnDestroy {
 
   @Input() name: string;
   @Input() lastBlockHTMLSelector: string;
@@ -18,7 +19,7 @@ export class PoolComponent implements OnInit {
   @ViewChild('matExpansionPanel') expansionPanel: MatExpansionPanel;
 
   addPoolForm: FormGroup;
-
+  onRemovePoolSubscr: Subscription;
   constructor(
     private formBuilder: FormBuilder,
     private db: DatabaseService
@@ -26,6 +27,10 @@ export class PoolComponent implements OnInit {
 
   ngOnInit() {
     this.createForm();
+  }
+
+  ngOnDestroy() {
+    this.onRemovePoolSubscr.unsubscribe();
   }
 
   createForm() {
@@ -43,18 +48,16 @@ export class PoolComponent implements OnInit {
   }
 
   delete() {
-    this.db.removePool(this.name);
+    this.onRemovePoolSubscr = this.db.removePool(this.name).subscribe();
     this.expansionPanel.close();
   }
 
   poolActiveToggle() {
     console.log(!this.isActive);
-    this.db.setPoolToggle(this.name, !this.isActive)
-      .then((result) => {
-        console.log('toggled');
-      }).catch((err) => {
-        'error toggling';
-      });
+    this.db.setPoolToggle$(this.name, !this.isActive)
+      .subscribe(
+        (result) => { console.log('toggled'); },
+        (err) => { console.log('error toggling'); });
   }
 
   expandPanel(matExpansionPanel: MatExpansionPanel, event: Event) {
