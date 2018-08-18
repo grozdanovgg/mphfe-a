@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, Observer, ObservableInput } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
 
 import IPool from '../models/IPool';
 import IToken from '../models/IToken';
@@ -17,128 +18,99 @@ export class DatabaseService {
   onAddPool$ = new Subject<IPool>();
   onRemovePool$ = new Subject<IPool>();
 
-  onPoolActiveToggle$ = new Subject<void>();
+  onPoolActiveToggle$ = new Subject<any | void>();
 
-  async addPool(pool: IPool): Promise<IPool | void> {
-
-    return this.chromeRepo.addEntity('pools', pool)
-      .then(poolAdded => {
-        this.onAddPool$.next(poolAdded);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-
-
-    // return new Promise((resolve, reject) => {
-    //   chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
-    //     if (!response.pools) {
-    //       response = { pools: [] };
-    //     }
-    //     const duplicatePool = response.pools.findIndex(
-    //       (existingPool) => {
-    //         return existingPool.name === pool.name;
-    //       }
-    //     );
-
-    //     if (duplicatePool === -1) {
-    //       console.log('PUSHING:');
-    //       console.log(pool);
-    //       response.pools.push(pool);
-    //       chrome.storage.sync.set({ pools: response.pools }, () => {
-    //         console.log('Value is set to: ');
-    //         console.log(pool);
-
-    //         this.onAddPool$.next(pool);
-
-    //         resolve(pool);
-    //       });
-    //     } else {
-    //       reject('A pool with this name is already added.');
-    //     }
-    //   });
-    // });
-  }
-
-  removePool(poolName: string): Observable<IPool | void> {
+  addPool(pool: IPool): Observable<void> {
     return Observable.create(observer => {
 
-      chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
-        if (!response.pools) {
-          response = { pools: [] };
-        }
-        const poolToRemoveIndex = response.pools.findIndex(
-          (existingPool) => {
-            return existingPool.name === poolName;
-          }
-        );
+      this.chromeRepo.addEntity('pools', pool)
+        .subscribe(poolAdded => {
+          this.onAddPool$.next(poolAdded);
+          observer.next(poolAdded);
+          observer.complete();
+        }, error => {
+          observer.error(error);
+        });
+    });
+  }
 
-        if (poolToRemoveIndex > -1) {
+  removePool(poolName: string): Observable<IPool> {
 
-          const poolToRemove = response.pools[poolToRemoveIndex];
-
-          response.pools.splice(poolToRemoveIndex, 1);
-
-          chrome.storage.sync.set({ pools: response.pools }, () => {
-            this.onRemovePool$.next(poolToRemove);
-            observer.next();
-            observer.complete();
-          });
-        } else {
-          observer.error();
-        }
-      });
+    return Observable.create((observer: Observer<IPool>) => {
+      this.chromeRepo.removeEntity('pools', poolName)
+        .subscribe(pool => {
+          this.onRemovePool$.next(pool as IPool);
+        }, error => {
+          observer.error(error);
+        });
     });
   }
 
   setPoolToggle$(poolName: string, isActive: boolean) {
     return Observable.create(observer => {
 
-      chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
-        if (!response.pools) {
-          response = { pools: [] };
-        }
-        const poolToToggleIndex: number = response.pools.findIndex(
-          (existingPool) => {
-            return existingPool.name === poolName;
-          }
-        );
+      this.chromeRepo.setEntityProperty('pools', poolName, { active: isActive })
+        .subscribe(pool => {
+          this.onPoolActiveToggle$.next(pool);
+          observer.next(pool);
+          observer.complete();
+        }, error => {
+          observer.error(error);
+        });
 
-        if (poolToToggleIndex > -1) {
+      //   chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
+      //     if (!response.pools) {
+      //       response = { pools: [] };
+      //     }
+      //     const poolToToggleIndex: number = response.pools.findIndex(
+      //       (existingPool) => {
+      //         return existingPool.name === poolName;
+      //       }
+      //     );
 
-          response.pools[poolToToggleIndex].active = isActive;
+      //     if (poolToToggleIndex > -1) {
 
-          chrome.storage.sync.set({ pools: response.pools }, () => {
-            this.onPoolActiveToggle$.next();
-            observer.next();
-            observer.complete();
-          });
-        } else {
-          observer.error();
-        }
-      });
+      //       response.pools[poolToToggleIndex].active = isActive;
+
+      //       chrome.storage.sync.set({ pools: response.pools }, () => {
+      //         this.onPoolActiveToggle$.next();
+      //         observer.next();
+      //         observer.complete();
+      //       });
+      //     } else {
+      //       observer.error();
+      //     }
+      //   });
     });
   }
 
   getTokens(): Observable<IToken[]> {
 
     return Observable.create(observer => {
-      chrome.storage.sync.get(['tokens'], (response: { tokens: IToken[] }) => {
-        if (!response.tokens) {
-          // TODO remove dummy data
-          // reject('No tokens found');
-          response.tokens = [{ name: 'ravencoin' }, { name: 'ether' }];
-        }
 
-        const tokens: IToken[] = response.tokens;
-        observer.next(tokens);
-        observer.complete();
-      });
+      this.chromeRepo.getTableEntities('tokens')
+        .subscribe(tokens => {
+
+          if (!tokens) {
+            // TODO remove dummy data
+            // reject('No tokens found');
+            tokens = [{ name: 'ravencoin' }, { name: 'ether' }];
+          }
+
+          console.log(tokens);
+          observer.next(tokens);
+          observer.complete();
+        }, error => {
+          observer.error(error);
+        });
     });
   }
 
   getTokenPools(tokenName: string): Observable<IPool[]> {
+
+    // return this.chromeRepo.getTableEntities('pools');
+
+    // TODO implement DB service, not to directly acces chrome API's
     return Observable.create(observer => {
 
       chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {

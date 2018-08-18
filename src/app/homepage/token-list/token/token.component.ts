@@ -59,11 +59,9 @@ export class TokenComponent implements OnInit, OnDestroy {
     };
 
     // this.onAddSubscription =
-    this.db.addPool(pool);
-    // .subscribe(
-    //   (poolAdded) => { console.log(poolAdded); },
-    //   (err) => { console.log(err); });
+    this.db.addPool(pool)
+      .subscribe(
+        (poolAdded) => { console.log(poolAdded); },
+        (err) => { console.log(err); });
   }
-
-
 }
