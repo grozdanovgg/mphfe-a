@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Subject, Observable } from 'rxjs';
+
 import IPool from '../models/IPool';
 import IToken from '../models/IToken';
-import { Subject } from '../../../node_modules/rxjs';
 import { ChromeRepositoryService } from './chromeRepository.service';
 
 @Injectable({
@@ -60,8 +61,8 @@ export class DatabaseService {
     // });
   }
 
-  removePool(poolName: string): Promise<IPool | void> {
-    return new Promise((resolve, reject) => {
+  removePool(poolName: string): Observable<IPool | void> {
+    return Observable.create(observer => {
 
       chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
         if (!response.pools) {
@@ -81,17 +82,18 @@ export class DatabaseService {
 
           chrome.storage.sync.set({ pools: response.pools }, () => {
             this.onRemovePool$.next(poolToRemove);
-            resolve();
+            observer.next();
+            observer.complete();
           });
         } else {
-          reject();
+          observer.error();
         }
       });
     });
   }
 
-  setPoolToggle(poolName: string, isActive: boolean) {
-    return new Promise((resolve, reject) => {
+  setPoolToggle$(poolName: string, isActive: boolean) {
+    return Observable.create(observer => {
 
       chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
         if (!response.pools) {
@@ -109,18 +111,19 @@ export class DatabaseService {
 
           chrome.storage.sync.set({ pools: response.pools }, () => {
             this.onPoolActiveToggle$.next();
-            resolve();
+            observer.next();
+            observer.complete();
           });
         } else {
-          reject();
+          observer.error();
         }
       });
     });
   }
 
-  getTokens(): Promise<IToken[]> {
+  getTokens(): Observable<IToken[]> {
 
-    return new Promise((resolve, reject) => {
+    return Observable.create(observer => {
       chrome.storage.sync.get(['tokens'], (response: { tokens: IToken[] }) => {
         if (!response.tokens) {
           // TODO remove dummy data
@@ -129,13 +132,14 @@ export class DatabaseService {
         }
 
         const tokens: IToken[] = response.tokens;
-        resolve(tokens);
+        observer.next(tokens);
+        observer.complete();
       });
     });
   }
 
-  getTokenPools(tokenName: string): Promise<IPool[]> {
-    return new Promise((resolve, reject) => {
+  getTokenPools(tokenName: string): Observable<IPool[]> {
+    return Observable.create(observer => {
 
       chrome.storage.sync.get(['pools'], (response: { pools: IPool[] }) => {
         if (!response.pools) {
@@ -147,8 +151,8 @@ export class DatabaseService {
         }
         const poolsOfToken: IPool[] = findPoolsOfToken(response.pools, 'forToken', tokenName);
 
-        resolve(poolsOfToken);
-
+        observer.next(poolsOfToken);
+        observer.complete();
       });
     });
 

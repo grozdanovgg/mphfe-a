@@ -19,7 +19,7 @@ export class TokenListComponent implements OnInit {
     //   this.db.getTokenPools(token.name);
     // }
     try {
-      this.tokens = await this.db.getTokens();
+      this.tokens = await this.db.getTokens().toPromise();
     } catch (error) {
       console.log(error);
     }
