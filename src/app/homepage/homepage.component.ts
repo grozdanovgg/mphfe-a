@@ -1,17 +1,9 @@
+import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material';
+
 import { DatabaseService } from './../services/database.service';
 import { HoppingService } from './../services/hopping.service';
-import { Component, OnInit } from '@angular/core';
-
-enum StartStopText {
-  Start = 'START Hopping',
-  Stop = 'STOP Hopping'
-}
-
-enum Colors {
-  primary = 'primary',
-  accent = 'accent',
-  warn = 'warn'
-}
+import { APP_CONFIG } from '../config/config';
 
 @Component({
   selector: 'app-homepage',
@@ -21,11 +13,11 @@ enum Colors {
 export class HomepageComponent implements OnInit {
 
   hoppingIsActive = false;
-  startStopColor = Colors.primary;
-  startStopBtnText = StartStopText.Start;
 
-  constructor(private hoppingService: HoppingService,
-    private db: DatabaseService) {
+  constructor(
+    private hoppingService: HoppingService,
+    private db: DatabaseService,
+    public snackBar: MatSnackBar) {
 
   }
 
@@ -40,18 +32,12 @@ export class HomepageComponent implements OnInit {
 
       await this.hoppingService.startWatching(pools);
       this.hoppingIsActive = !this.hoppingIsActive;
-      if (this.hoppingIsActive) {
-        this.startStopBtnText = StartStopText.Stop;
-        this.startStopColor = Colors.warn;
-      } else {
-        this.startStopBtnText = StartStopText.Start;
-        this.startStopColor = Colors.primary;
-      }
+
     } catch (error) {
       console.log(error);
+      this.snackBar.open(error, 'close', { verticalPosition: 'top' });
     }
     // this.db.getTokens();
 
   }
-
 }

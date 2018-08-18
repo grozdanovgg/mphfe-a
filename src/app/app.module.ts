@@ -22,6 +22,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatListModule,
     MatTabsModule,
     MatIconModule,
+    MatSnackBarModule,
     FlexLayoutModule
   ],
   providers: [],

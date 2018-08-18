@@ -38,7 +38,7 @@ export class HoppingService {
 
       } catch (error) {
         console.log(error);
-        rej();
+        rej(error);
       }
     });
   }

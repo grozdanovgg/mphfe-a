@@ -1,2 +1,2 @@
 <app-token-list></app-token-list>
-<button mat-raised-button [color]="startStopColor" (click)="startHopping()">{{startStopBtnText}}</button>
+<button mat-raised-button [color]="hoppingIsActive ? 'warn' : 'primary'" (click)="startHopping()">{{hoppingIsActive?'STOP Hopping':'START Hopping'}}</button>
