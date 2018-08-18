@@ -48,7 +48,7 @@ export class PoolComponent implements OnInit, OnDestroy {
   }
 
   delete() {
-    this.onRemovePoolSubscr = this.db.removePool(this.name).subscribe();
+    this.onRemovePoolSubscr = this.db.removePool$(this.name).subscribe();
     this.expansionPanel.close();
   }
 

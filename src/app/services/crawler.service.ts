@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service';
+import { Observable, of } from 'rxjs';
+import IPool from '../models/IPool';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +28,12 @@ export class CrawlerService {
     };
   }
 
-  startCrawler(pools): void {
-    // this.db.s
+  startCrawler(pools): Observable<IPool[]> {
+
+    console.log('Pools to crawl:');
+    console.log(pools);
+
+    return of([]);
+    // this.db.setTokenHopData()
   }
 }

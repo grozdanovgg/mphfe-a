@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CrawlerService } from './crawler.service';
 import IPool from '../models/IPool';
 import { Observable } from '../../../node_modules/rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -12,36 +13,47 @@ export class HoppingService {
 
   constructor(private crawler: CrawlerService) { }
 
-  startWatching(poolslist: IPool[]): Observable<Object> {
-    return Observable.create(observer => {
+  startWatching(poolsList: IPool[]): Observable<IPool[]> {
+    return this.crawler.startCrawler(poolsList)
+      .pipe(
+        tap(pools => {
 
-      return this.checkIfControlSiteAvailable('https://simplemining.net/*')
-        .subscribe(tab => {
-
-          chrome.tabs.executeScript(
-            tab.id,
-            {
-              file: 'assets/content.js'
-            },
-            (results) => {
-              console.log(results);
-            });
-
-          console.log(tab);
-
-          setInterval(() => {
-            for (const pool of poolslist) {
-              this.crawler.checkEl(pool.url, pool.lastBlockHTMLSelector);
-            }
-          }, this.interval);
-
-          observer.next();
-        }, (error) => {
-          console.log(error);
-          observer.error();
-        });
-    });
+          // TODO here we should get the pools to watch filled with fresh data, to calculate the best pool
+          console.log(pools);
+        })
+      );
   }
+
+  // activateBestPool(poolsList: IPool[]): Observable<void> {
+  //   return Observable.create(observer => {
+
+  //     return this.checkIfControlSiteAvailable('https://simplemining.net/*')
+  //       .subscribe(tab => {
+
+  //         chrome.tabs.executeScript(
+  //           tab.id,
+  //           {
+  //             file: 'assets/content.js'
+  //           },
+  //           (results) => {
+  //             console.log(results);
+  //           });
+
+  //         console.log(tab);
+
+  //         setInterval(() => {
+  //           for (const pool of poolsList) {
+  //             this.crawler.checkEl(pool.url, pool.lastBlockHTMLSelector);
+  //           }
+  //         }, this.interval);
+
+  //         observer.next();
+  //       }, (error) => {
+  //         console.log(error);
+  //         observer.error();
+  //       });
+  //   });
+  // }
 
   private checkIfControlSiteAvailable(controlSites: string): Observable<ITab> {
     return Observable.create(observer => {

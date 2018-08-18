@@ -21,7 +21,7 @@ export class TokenComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
-    this.pools = await this.db.getTokenPools(this.name).toPromise();
+    this.pools = await this.db.getTokenPools$(this.name).toPromise();
 
     this.db.onAddPool$.subscribe((pool: IPool) => {
       console.log('POOL ADDED DETECTED');
@@ -59,7 +59,7 @@ export class TokenComponent implements OnInit, OnDestroy {
     };
 
     // this.onAddSubscription =
-    this.db.addPool(pool)
+    this.db.addPool$(pool)
       .subscribe(
         (poolAdded) => { console.log(poolAdded); },
         (err) => { console.log(err); });

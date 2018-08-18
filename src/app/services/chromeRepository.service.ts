@@ -86,6 +86,13 @@ export class ChromeRepositoryService {
   getTableEntities<T>(tableName: string): Observable<T> {
     return Observable.create((observer: Observer<T>) => {
       chrome.storage.sync.get(tableName, response => {
+
+        if (!response.tokens) {
+          // TODO remove dummy data
+          // reject('No tokens found');
+          response.tokens = [{ name: 'ravencoin' }, { name: 'ether' }];
+        }
+
         console.log(response);
         observer.next(response[tableName]);
         observer.complete();

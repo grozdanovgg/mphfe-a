@@ -3,7 +3,8 @@ import { MatSnackBar } from '@angular/material';
 
 import { DatabaseService } from './../services/database.service';
 import { HoppingService } from './../services/hopping.service';
-import { APP_CONFIG } from '../config/config';
+import { map, mergeMap, tap } from 'rxjs/operators';
+import IPool from '../models/IPool';
 
 @Component({
   selector: 'app-homepage',
@@ -24,20 +25,28 @@ export class HomepageComponent implements OnInit {
   ngOnInit() {
   }
 
-  async startHopping() {
+  startHopping() {
 
-    try {
-      const tokens = await this.db.getTokens().toPromise();
-      const pools = await this.db.getTokenPools(tokens[0].name).toPromise();
-
-      await this.hoppingService.startWatching(pools).toPromise();
-      this.hoppingIsActive = !this.hoppingIsActive;
-
-    } catch (error) {
-      console.log(error);
-      this.snackBar.open(error, 'close', { verticalPosition: 'top' });
-    }
-    // this.db.getTokens();
-
+    this.db.getTokens$()
+      .pipe(
+        mergeMap(tokens => {
+          return this.db.getTokenPools$(tokens[0].name);
+        }),
+        map((pools: IPool[]) => {
+          return pools.filter(pool => pool.active);
+        }),
+        mergeMap((pools: IPool[]) => {
+          return this.hoppingService.startWatching(pools);
+        }),
+        tap(() => {
+          this.hoppingIsActive = !this.hoppingIsActive;
+        })
+      )
+      .subscribe(res => {
+        console.log(res);
+      }, error => {
+        console.log(error);
+        this.snackBar.open(error, 'close', { verticalPosition: 'top' });
+      });
   }
 }
