@@ -33,6 +33,9 @@ export class CrawlerService {
     console.log('Pools to crawl:');
     console.log(pools);
 
+    // TODO implement crawsler functionality
+    // for now, mock the data
+
     return of([]);
     // this.db.setTokenHopData()
   }
