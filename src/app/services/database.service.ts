@@ -53,7 +53,7 @@ export class DatabaseService {
     return this.chromeRepo.getTableEntities('tokens');
   }
 
-  getTokenPools$(tokenName: string): Observable<IPool[]> {
+  getTokenPools$(tokenNames: string[]): Observable<IPool[]> {
 
     return this.chromeRepo.getTableEntities('pools')
       .pipe(
@@ -68,7 +68,14 @@ export class DatabaseService {
             response.push({ name: '2', lastBlockHTMLSelector: 'sel 2', url: 'some url here...', forToken: 'ether', active: false });
           }
 
-          response = pools.filter(pool => pool.forToken === tokenName);
+          response = pools.filter(pool => {
+            for (const tokenName of tokenNames) {
+              if (pool.forToken === tokenName) {
+                return true;
+              }
+            }
+            return false;
+          });
 
           return response;
         })

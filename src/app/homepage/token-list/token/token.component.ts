@@ -17,11 +17,12 @@ export class TokenComponent implements OnInit, OnDestroy {
   pools: IPool[] = []; // = [{ name: '1', lastBlockHTMLSelector: 'sel' }, { name: '2', lastBlockHTMLSelector: 'sel 2' }];
   onAddSubscription: Subscription;
 
-  constructor(private db: DatabaseService,
+  constructor(
+    private db: DatabaseService,
     private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
-    this.pools = await this.db.getTokenPools$(this.name).toPromise();
+    this.pools = await this.db.getTokenPools$([this.name]).toPromise();
 
     this.db.onAddPool$.subscribe((pool: IPool) => {
       console.log('POOL ADDED DETECTED');

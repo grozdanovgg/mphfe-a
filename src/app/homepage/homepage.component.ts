@@ -30,7 +30,8 @@ export class HomepageComponent implements OnInit {
     this.db.getTokens$()
       .pipe(
         mergeMap(tokens => {
-          return this.db.getTokenPools$(tokens[0].name);
+          const tokenNames = tokens.map(token => token.name);
+          return this.db.getTokenPools$(tokenNames);
         }),
         map((pools: IPool[]) => {
           return pools.filter(pool => pool.active);
