@@ -1,3 +1,10 @@
+# DevelopmentL
+run ng build --watchc
+open chrome -> manage extentions
+load unpacked extention
+load dist/mphfe folder
+run the extention
+
 # Mphfe
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
