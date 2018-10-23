@@ -4,10 +4,7 @@
 </mat-accordion> -->
 <mat-accordion *ngFor="let pool of pools"
                [multi]="false">
-  <app-pool [name]="pool.name"
-            [lastBlockHTMLSelector]="pool.lastBlockHTMLSelector"
-            [forToken]="name"
-            [isActive]="pool.active"></app-pool>
+  <app-pool [pool]="pool"></app-pool>
 </mat-accordion>
 
 <br>

@@ -100,7 +100,7 @@ export class ChromeRepositoryService {
     });
   }
 
-  setEntityProperty<T>(table: string, entityName: string, propertiesToSet: {}): Observable<T> {
+  setEntityProperty<T>(table: string, entityName: string, propertiesToSet: T): Observable<T> {
 
     return Observable.create((observer) => {
 

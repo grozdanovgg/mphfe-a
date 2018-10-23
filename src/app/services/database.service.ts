@@ -15,6 +15,7 @@ export class DatabaseService {
     private chromeRepo: ChromeRepositoryService,
   ) { }
 
+  onPoolChange$ = new Subject<IPool>();
   onAddPool$ = new Subject<IPool>();
   onRemovePool$ = new Subject<IPool>();
 
@@ -27,6 +28,10 @@ export class DatabaseService {
           this.onAddPool$.next(poolAdded);
         })
       );
+  }
+
+  editPool$(pool: IPool): Observable<IPool> {
+    return <Observable<IPool>>this.chromeRepo.setEntityProperty('pools', pool.name, pool);
   }
 
   removePool$(poolName: string): Observable<IPool> {

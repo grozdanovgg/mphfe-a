@@ -1,37 +1,48 @@
-<mat-expansion-panel #matExpansionPanel [hideToggle]="true">
-
+<mat-expansion-panel #matExpansionPanel
+                     [hideToggle]="true">
 
   <mat-expansion-panel-header (click)="expandPanel(matExpansionPanel, $event)">
     <mat-panel-title>
-      {{name}}
+      {{pool.name}}
     </mat-panel-title>
 
     <mat-panel-description>
       <!-- {{lastBlockHTMLSelector}} -->
-      <mat-slide-toggle aria-label="pool-active-toggle" [color]="'accent'" [checked]="isActive" [disabled]="'false'" (change)="poolActiveToggle()">
+      <mat-slide-toggle aria-label="pool-active-toggle"
+                        [color]="'accent'"
+                        [checked]="pool.active"
+                        [disabled]="'false'"
+                        (change)="poolActiveToggle()">
         Slide me!
       </mat-slide-toggle>
-
-
 
     </mat-panel-description>
     <mat-icon class="pool-edit-icon">border_color</mat-icon>
 
   </mat-expansion-panel-header>
 
-
-
   <ng-template matExpansionPanelContent>
 
-
-    <form [formGroup]="addPoolForm" (keyup.enter)="save()">
+    <form [formGroup]="addPoolForm"
+          (keyup.enter)="save()">
       <mat-form-field>
-        <input matInput placeholder="Last block HTML selector" value="{{lastBlockHTMLSelector}}">
+        <input formControlName="htmlSelector"
+               matInput
+               placeholder="Last block HTML selector">
       </mat-form-field>
       <div>
-        <button type="button" (click)="save()" mat-raised-button color="primary">Save</button>
-        <button type="button" (click)="cancelEdit()" mat-raised-button color="primary">Cancel</button>
-        <button type="button" (click)="delete()" mat-raised-button color="warn">Delete</button>
+        <button type="button"
+                (click)="save()"
+                mat-raised-button
+                color="primary">Save</button>
+        <button type="button"
+                (click)="cancelEdit()"
+                mat-raised-button
+                color="primary">Cancel</button>
+        <button type="button"
+                (click)="delete()"
+                mat-raised-button
+                color="warn">Delete</button>
       </div>
     </form>
     <br>
