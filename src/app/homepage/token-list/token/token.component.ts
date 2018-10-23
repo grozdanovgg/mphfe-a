@@ -15,7 +15,7 @@ export class TokenComponent implements OnInit, OnDestroy {
   @Input() name: string;
 
   pools: IPool[] = []; // = [{ name: '1', lastBlockHTMLSelector: 'sel' }, { name: '2', lastBlockHTMLSelector: 'sel 2' }];
-  onAddSubscription: Subscription;
+  activeSubscriptions: Subscription[] = [];
 
   constructor(
     private db: DatabaseService,
@@ -24,7 +24,7 @@ export class TokenComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.pools = await this.db.getTokenPools$([this.name]).toPromise();
 
-    this.db.onAddPool$.subscribe((pool: IPool) => {
+    const addPoolSubscr = this.db.onAddPool$.subscribe((pool: IPool) => {
       console.log('POOL ADDED DETECTED');
       if (pool.forToken === this.name) {
         this.pools.push(pool);
@@ -34,7 +34,7 @@ export class TokenComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.db.onRemovePool$.subscribe((poolToRemove: IPool) => {
+    const removePoolSubscr = this.db.onRemovePool$.subscribe((poolToRemove: IPool) => {
 
       const poolIndex = this.pools.findIndex(pool => pool.name === poolToRemove.name);
       if (poolIndex >= 0) {
@@ -43,10 +43,14 @@ export class TokenComponent implements OnInit, OnDestroy {
 
     });
 
+    this.activeSubscriptions.push(addPoolSubscr);
+    this.activeSubscriptions.push(removePoolSubscr);
   }
 
   ngOnDestroy(): void {
-    this.onAddSubscription.unsubscribe();
+    this.activeSubscriptions.forEach(subscrubtion => {
+      subscrubtion.unsubscribe();
+    });
   }
 
   addPool(poolName: string, url: string, lastBlockHTMLSelector: string): void {
@@ -59,10 +63,14 @@ export class TokenComponent implements OnInit, OnDestroy {
       active: false
     };
 
-    // this.onAddSubscription =
-    this.db.addPool$(pool)
+    const addPoolSubscr = this.db.addPool$(pool)
       .subscribe(
-        (poolAdded) => { console.log(poolAdded); },
-        (err) => { console.log(err); });
+        poolAdded => {
+          console.log(poolAdded);
+        }, err => {
+          console.log(err);
+        });
+
+    this.activeSubscriptions.push(addPoolSubscr);
   }
 }
