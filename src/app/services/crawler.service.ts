@@ -70,8 +70,17 @@ export class CrawlerService {
   getUnopenPools(allPools: IPool[]): Observable<IPool[]> {
     return Observable.create(observer => {
       chrome.tabs.query({ currentWindow: true }, tabs => {
-        console.log(tabs);
-        observer.next(tabs);
+        const unopenedPools = allPools.filter(pool => {
+          const tabIndex = tabs.findIndex(tab => {
+            return tab.url === pool.url;
+          });
+
+          if (tabIndex === -1) {
+            return true;
+          }
+          return false;
+        });
+        observer.next(unopenedPools);
         observer.comlete();
       });
     });
