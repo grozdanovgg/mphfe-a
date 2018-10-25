@@ -81,20 +81,22 @@ export class CrawlerService {
           return false;
         });
         observer.next(unopenedPools);
-        observer.comlete();
+        // observer.comlete();
       });
     });
   }
 
   openPools(pools: IPool[]): Observable<void> {
-    return Observable.create(observer => {
-      for (const pool of pools) {
+    // TODO FIX - NOT WORKING PROPERLY
+    const observables: Observable<void>[] = [];
+    for (const pool of pools) {
+      observables.push(Observable.create(observer => {
         chrome.tabs.create({ 'url': pool.url }, tab => {
-          console.log(`Tab opened:`);
-          console.log(tab);
+          observer.next();
         });
-      }
-    });
+      }));
+    }
+    return forkJoin(...observables);
   }
 
   crawlPool(pool: IPool, tabId): Observable<IPool> {
