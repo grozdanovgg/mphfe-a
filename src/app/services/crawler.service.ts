@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DatabaseService } from './database.service';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import IPool from '../models/IPool';
-import { map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -42,22 +42,32 @@ export class CrawlerService {
         mergeMap(() => {
 
           return Observable.create(observer => {
-            return chrome.tabs.query({ currentWindow: true }, (tabs: ITab[]) => {
+            chrome.tabs.query({ currentWindow: true }, (tabs: ITab[]) => {
 
-              const crawlingPools = [];
+              const crawlingPools: Observable<void>[] = [];
 
               for (const pool of pools) {
-                const tabid = tabs.find(tab => {
+                const tabFound = tabs.find(tab => {
                   return tab.url === pool.url;
                 });
-                crawlingPools.push(this.crawlPool(pool, tabid));
+                crawlingPools.push(this.crawlPool(pool, tabFound.id));
               }
 
-              observer.next(crawlingPools);
+              forkJoin(crawlingPools)
+                .subscribe((allPools) => {
+                  observer.next(allPools);
+                });
+              // console.log('Before join');
+
+              // observer.next();
+              // console.log('Before complete');
+
+              // observer.complete();
+              // console.log('After complete');
             });
           });
         })
-      )
+      );
 
 
     // TODO implement crawsler functionality
@@ -87,28 +97,38 @@ export class CrawlerService {
   }
 
   openPools(pools: IPool[]): Observable<void> {
-    // TODO FIX - NOT WORKING PROPERLY
+
     const observables: Observable<void>[] = [];
     for (const pool of pools) {
       observables.push(Observable.create(observer => {
         chrome.tabs.create({ 'url': pool.url }, tab => {
-          observer.next();
+          observer.next(tab);
         });
       }));
+    }
+    if (observables.length === 0) {
+      return of(null);
     }
     return forkJoin(...observables);
   }
 
-  crawlPool(pool: IPool, tabId): Observable<IPool> {
+  crawlPool(pool: IPool, tabId): Observable<void> {
+
 
     return Observable.create(observer => {
-      chrome.tabs.executeScript(tabId, {
-        code: 'console.log(5);`'
-      }, (result) => {
-        console.log(result);
-        observer.next(result);
-        observer.complete();
-      });
+      chrome.tabs.executeScript(
+        tabId,
+        {
+          file: 'assets/content.js'
+        },
+        (result) => {
+
+          // TODO return crawled data somehow?
+          // maybe with messegase from the content script
+          console.log(result);
+          observer.next(result);
+          observer.complete();
+        });
     });
   }
 }

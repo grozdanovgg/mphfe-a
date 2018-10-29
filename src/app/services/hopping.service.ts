@@ -16,10 +16,13 @@ export class HoppingService {
   startWatching(poolsList: IPool[]): Observable<IPool[]> {
     return this.crawler.startCrawler(poolsList)
       .pipe(
-        tap(pools => {
+        tap((pools: IPool[]) => {
 
           // TODO here we should get the pools to watch filled with fresh data, to calculate the best pool
           console.log(pools);
+          // pools.subscribe((pools2) => {
+          //   console.log(pools2);
+          // });
         })
       );
   }

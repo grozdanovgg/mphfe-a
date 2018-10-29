@@ -30,6 +30,8 @@ export class HomepageComponent implements OnInit {
     this.db.getTokens$()
       .pipe(
         mergeMap(tokens => {
+
+          // Open unopened pools to mine
           const tokenNames = tokens.map(token => token.name);
           return this.db.getTokenPools$(tokenNames);
         }),
